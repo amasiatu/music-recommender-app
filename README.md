@@ -21,13 +21,13 @@ Explain your design in plain language.
 
 Some prompts to answer:
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+- Some features that each `Song` will use int the system will be genre, mood, energy, and acousticness mainly weighted by the order in the list due to experiencing those things mattering more and not allowing the system to mix up scoring with so many options of features
+- `UserProfile` stores the users location, favorite genre, favorite mood, target energy, and a short range for acoustic tendencies
+- My `Recommender` computes a score for each song by out of 100 scoring and weighing genre highest followed after mood, taregt energy and acoustic tendency
+- Using ranking we find the number and compare it to the users last song or their listen history
 
-You can include a simple diagram or bullet list if helpful.
+- Data flow plan: Input(User prefs) -> Load Songs(Data) -> Score Songs(Scoring Logic) -> Songs Score judged(recommender) -> Output (top k highest songs recommended)
+  - Some potential biases may be on certain genres being associated with certain energy levels or the data having more songs of a certain genre and less of another
 
 ---
 
@@ -69,6 +69,28 @@ You can add more tests in `tests/test_recommender.py`.
 ## Sample Recommendation Output
 
 Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
+
+User profile:
+  genre: pop
+  mood: happy
+  energy: 0.8
+
+Top recommendations:
+
+Sunrise City - Score: 1.00
+Because: matches your favorite genre (pop), matches your mood (happy), energy is close to your target (0.82 vs 0.80)
+
+Gym Hero - Score: 0.72
+Because: matches your favorite genre (pop), energy is close to your target (0.93 vs 0.80)
+
+Rooftop Lights - Score: 0.49
+Because: matches your mood (happy), energy is close to your target (0.76 vs 0.80)
+
+Night Drive Loop - Score: 0.24
+Because: energy is close to your target (0.75 vs 0.80)
+
+Concrete Sunrise - Score: 0.23
+Because: energy is close to your target (0.72 vs 0.80)
 
 ```
 # e.g.:

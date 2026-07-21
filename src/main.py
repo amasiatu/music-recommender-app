@@ -9,7 +9,7 @@ You will implement the functions in recommender.py:
 - recommend_songs
 """
 
-from recommender import load_songs, recommend_songs
+from src.recommender import load_songs, recommend_songs
 
 
 def main() -> None:
@@ -17,6 +17,10 @@ def main() -> None:
 
     # Starter example profile
     user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8}
+
+    print("\nUser profile:")
+    for key, value in user_prefs.items():
+        print(f"  {key}: {value}")
 
     recommendations = recommend_songs(user_prefs, songs, k=5)
 
