@@ -107,4 +107,7 @@ Prompts:
 
 - I learned that recommender systems take a lot of calculations and complexities to increase  
 - Something interesting was that the genres weren't related  
-- This changed the way I think about apps because it shows me that my recs has a lot going on in the background even though its simple for me  
+- This changed the way I think about apps because it shows me that my recs has a lot going on in the background even though its simple for me
+- I did use AI tools but it wasn't always correct so I had to double check changes made to code. 
+- My biggest learning experience was regarding the weights of the variables 
+- If I extended this project I would like to improve my recs and play around with equations
