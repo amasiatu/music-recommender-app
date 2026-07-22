@@ -34,7 +34,7 @@ class UserProfile:
 # Relative importance of each feature. Genre dominates, then mood, energy,
 # and acousticness contribute equally. Only the features a user actually
 # expresses a preference for are counted (see _score_features).
-WEIGHTS = {"genre": 0.4, "mood": 0.2, "energy": 0.2, "acoustic": 0.2}
+WEIGHTS = {"genre": 0.2, "mood": 0.2, "energy": 0.4, "acoustic": 0.2}
 
 
 def _closeness(target: float, value: float) -> float:
@@ -76,11 +76,12 @@ def _score_features(
             score += WEIGHTS["genre"]
             reasons.append(f"matches your favorite genre ({genre_pref})")
 
-    if mood_pref is not None:
-        active_weight += WEIGHTS["mood"]
-        if song_mood == mood_pref:
-            score += WEIGHTS["mood"]
-            reasons.append(f"matches your mood ({mood_pref})")
+    # TEMP: mood check disabled to see how rankings shift without it.
+    # if mood_pref is not None:
+    #     active_weight += WEIGHTS["mood"]
+    #     if song_mood == mood_pref:
+    #         score += WEIGHTS["mood"]
+    #         reasons.append(f"matches your mood ({mood_pref})")
 
     if energy_pref is not None:
         active_weight += WEIGHTS["energy"]

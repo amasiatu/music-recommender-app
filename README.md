@@ -92,14 +92,72 @@ Because: energy is close to your target (0.75 vs 0.80)
 Concrete Sunrise - Score: 0.23
 Because: energy is close to your target (0.72 vs 0.80)
 
-```
-# e.g.:
-# User profile: genre=indie, mood=chill, energy=low
-# Recommendations:
-#   1. ...
-#   2. ...
-#   3. ...
-```
+{User profile:
+  genre: rock
+  mood: sad
+  energy: 0.7
+
+Top recommendations:
+
+Storm Runner - Score: 0.70
+Because: matches your favorite genre (rock)
+
+Concrete Sunrise - Score: 0.24
+Because: energy is close to your target (0.72 vs 0.70)
+
+Night Drive Loop - Score: 0.24
+Because: energy is close to your target (0.75 vs 0.70)
+
+Rooftop Lights - Score: 0.23
+Because: energy is close to your target (0.76 vs 0.70)
+
+Backroad Dust - Score: 0.23
+Because: energy is close to your target (0.60 vs 0.70)}
+
+{User profile:
+  genre: rap
+  mood: sad
+  energy: 0.4
+
+Top recommendations:
+
+Focus Flow - Score: 0.25
+Because: energy is close to your target (0.40 vs 0.40)
+
+Midnight Coding - Score: 0.24
+Because: energy is close to your target (0.42 vs 0.40)
+
+Dust and Pinewood - Score: 0.24
+Because: energy is close to your target (0.38 vs 0.40)
+
+Coffee Shop Stories - Score: 0.24
+Because: energy is close to your target (0.37 vs 0.40)
+
+Library Rain - Score: 0.24
+Because: energy is close to your target (0.35 vs 0.40)}
+
+{ User profile:
+  genre: hip-hop
+  mood: sad
+  energy: 0.6
+
+Top recommendations:
+
+Backroad Dust - Score: 0.25
+Because: energy is close to your target (0.60 vs 0.60)
+
+Island Time - Score: 0.24
+Because: energy is close to your target (0.55 vs 0.60)
+
+Concrete Sunrise - Score: 0.22
+Because: energy is close to your target (0.72 vs 0.60)
+
+Velvet Hours - Score: 0.22
+Because: energy is close to your target (0.48 vs 0.60)
+
+Night Drive Loop - Score: 0.21
+Because: energy is close to your target (0.75 vs 0.60)
+}
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
 
