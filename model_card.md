@@ -22,3 +22,4 @@ I used Claude to code and to add the RAG feature, write tests, and explain conce
 - **Flawed / incorrect suggestion:** When I asked it to add 100+ real songs, the AI filled in
   audio-feature numbers (energy, tempo, valence, danceability, acousticness) that *looked* precise
   and official — but they were actually made-up estimates.
+
