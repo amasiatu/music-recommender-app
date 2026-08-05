@@ -1,0 +1,68 @@
+%% Music Recommender Simulation - System Architecture
+%% Render at https://mermaid.live or with the Mermaid VS Code extension.
+
+flowchart TD
+    %% ---------- INPUT ----------
+    User([User])
+    Query["Plain-English request<br/>e.g. 'chill music for studying'"]
+    Prefs["Structured taste profile<br/>genre / mood / energy"]
+    User -->|types a request| Query
+    User -->|sets preferences| Prefs
+
+    %% ---------- DATA SOURCE ----------
+    CSV[("data/songs.csv<br/>song catalog — the source")]
+
+    %% ---------- RAG PATH (AI) ----------
+    subgraph RAG["RAG music assistant (src/rag.py)"]
+        direction TB
+        Retriever["RETRIEVE<br/>retrieve_songs()<br/>rank catalog vs. query"]
+        Augment["AUGMENT<br/>format_context()<br/>build grounded context block"]
+        Generate["GENERATE<br/>Claude (claude-opus-4-8)<br/>recommend ONLY from retrieved songs"]
+        Retriever --> Augment --> Generate
+    end
+
+    %% ---------- CLASSIC PATH (scoring) ----------
+    subgraph REC["Scoring recommender (src/recommender.py)"]
+        direction TB
+        Score["score_song()<br/>weighted genre / mood / energy / acoustic"]
+        Rank["recommend_songs()<br/>rank + keep top-k"]
+        Score --> Rank
+    end
+
+    %% ---------- FLOW INTO PROCESSES ----------
+    Query --> Retriever
+    Prefs --> Score
+    CSV -->|load_songs| Retriever
+    CSV -->|load_songs| Score
+
+    %% ---------- OUTPUT ----------
+    Fallback{"API key<br/>available?"}
+    Generate --> Fallback
+    Fallback -->|no| RetrievedOnly["Fallback output:<br/>retrieved songs list"]
+    Fallback -->|yes| AIout["AI recommendation<br/>grounded in catalog"]
+    Rank --> RecOut["Top-k recommendations<br/>with reasons"]
+
+    %% ---------- HUMAN + TESTING CHECKS ----------
+    subgraph CHECK["Checking AI results"]
+        direction TB
+        Tests["Automated tests<br/>pytest / tests/test_recommender.py"]
+        Human["Human review<br/>reads output, judges relevance"]
+        Card["Model card<br/>model_card.md — bias & limits"]
+    end
+
+    AIout --> Human
+    RetrievedOnly --> Human
+    RecOut --> Human
+    Rank -.verifies scoring.-> Tests
+    Human --> Card
+    Human -->|refines query / prefs| User
+
+    %% ---------- STYLES ----------
+    classDef source fill:#fde68a,stroke:#b45309,color:#111;
+    classDef ai fill:#bfdbfe,stroke:#1d4ed8,color:#111;
+    classDef check fill:#bbf7d0,stroke:#15803d,color:#111;
+    classDef out fill:#e9d5ff,stroke:#7e22ce,color:#111;
+    class CSV source;
+    class Retriever,Augment,Generate ai;
+    class Tests,Human,Card check;
+    class AIout,RetrievedOnly,RecOut out;
