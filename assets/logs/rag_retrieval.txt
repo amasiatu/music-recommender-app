@@ -1,0 +1,48 @@
+$ python -m src.rag "high energy hip hop for the gym"
+
+Your request: high energy hip hop for the gym
+
+AI recommendation unavailable: ANTHROPIC_API_KEY is not set. Export your key to enable AI recommendations:
+    export ANTHROPIC_API_KEY=sk-ant-...
+
+Here are the 5 closest songs I retrieved from the catalog:
+- "Lose Yourself" by Eminem (genre: hip hop, mood: intense, energy: 0.75, tempo: 171 bpm, danceability: 0.69, acousticness: 0.02)
+- "SICKO MODE" by Travis Scott (genre: hip hop, mood: dark, energy: 0.73, tempo: 155 bpm, danceability: 0.83, acousticness: 0.00)
+- "Concrete Sunrise" by Blockwork (genre: hip hop, mood: confident, energy: 0.72, tempo: 95 bpm, danceability: 0.84, acousticness: 0.12)
+- "Stronger" by Kanye West (genre: hip hop, mood: confident, energy: 0.72, tempo: 104 bpm, danceability: 0.62, acousticness: 0.02)
+- "Industry Baby" by Lil Nas X (genre: hip hop, mood: triumphant, energy: 0.70, tempo: 150 bpm, danceability: 0.74, acousticness: 0.02)
+
+----------------------------------------
+
+$ python -m src.rag "chill music for late-night studying"
+
+Your request: chill music for late-night studying
+
+AI recommendation unavailable: ANTHROPIC_API_KEY is not set. Export your key to enable AI recommendations:
+    export ANTHROPIC_API_KEY=sk-ant-...
+
+Here are the 5 closest songs I retrieved from the catalog:
+- "Spacewalk Thoughts" by Orbit Bloom (genre: ambient, mood: chill, energy: 0.28, tempo: 60 bpm, danceability: 0.41, acousticness: 0.92)
+- "Library Rain" by Paper Lanterns (genre: lofi, mood: chill, energy: 0.35, tempo: 72 bpm, danceability: 0.58, acousticness: 0.86)
+- "Midnight Coding" by LoRoom (genre: lofi, mood: chill, energy: 0.42, tempo: 78 bpm, danceability: 0.62, acousticness: 0.71)
+- "Location" by Khalid (genre: r&b, mood: chill, energy: 0.42, tempo: 90 bpm, danceability: 0.66, acousticness: 0.30)
+- "Weightless" by Marconi Union (genre: ambient, mood: calm, energy: 0.10, tempo: 60 bpm, danceability: 0.20, acousticness: 0.90)
+
+----------------------------------------
+
+$ python -m src.rag "sad acoustic songs for a rainy day"
+
+Your request: sad acoustic songs for a rainy day
+
+AI recommendation unavailable: ANTHROPIC_API_KEY is not set. Export your key to enable AI recommendations:
+    export ANTHROPIC_API_KEY=sk-ant-...
+
+Here are the 5 closest songs I retrieved from the catalog:
+- "Chop Suey" by System of a Down (genre: metal, mood: aggressive, energy: 0.96, tempo: 127 bpm, danceability: 0.40, acousticness: 0.00)
+- "Basket Case" by Green Day (genre: punk, mood: energetic, energy: 0.90, tempo: 170 bpm, danceability: 0.45, acousticness: 0.00)
+- "American Idiot" by Green Day (genre: punk, mood: angry, energy: 0.90, tempo: 186 bpm, danceability: 0.40, acousticness: 0.00)
+- "Livin' on a Prayer" by Bon Jovi (genre: rock, mood: triumphant, energy: 0.78, tempo: 122 bpm, danceability: 0.53, acousticness: 0.05)
+- "What a Wonderful World" by Louis Armstrong (genre: jazz, mood: hopeful, energy: 0.25, tempo: 100 bpm, danceability: 0.35, acousticness: 0.80)
+
+----------------------------------------
+
