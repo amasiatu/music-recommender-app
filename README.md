@@ -1,202 +1,156 @@
-# 🎵 Music Recommender Simulation
+# 🎵 Music Recommender Simulation — with a RAG Assistant
 
-## Project Summary
+## Original Project (Modules 1–3)
 
-In this project you will build and explain a small music recommender system.
-
-Your goal is to:
-
-- Represent songs and a user "taste profile" as data
-- Design a scoring rule that turns that data into recommendations
-- Evaluate what your system gets right and wrong
-- Reflect on how this mirrors real world AI recommenders
-
-Replace this paragraph with your own summary of what your version does.
+This builds on my **Music Recommender Simulation** from Modules 1–3. The original
+project represented songs and a user "taste profile" as data, then used a weighted
+scoring rule (genre and mood weighted highest, followed by target energy and
+acousticness) to rank a small catalog and return the top-k recommendations, each
+with a human-readable reason. It could explain *why* a song was picked, but it only
+understood **structured preferences** — not free-text requests.
 
 ---
 
-## How The System Works
+## Title and Summary
 
-Explain your design in plain language.
-
-Some prompts to answer:
-
-- Some features that each `Song` will use int the system will be genre, mood, energy, and acousticness mainly weighted by the order in the list due to experiencing those things mattering more and not allowing the system to mix up scoring with so many options of features
-- `UserProfile` stores the users location, favorite genre, favorite mood, target energy, and a short range for acoustic tendencies
-- My `Recommender` computes a score for each song by out of 100 scoring and weighing genre highest followed after mood, taregt energy and acoustic tendency
-- Using ranking we find the number and compare it to the users last song or their listen history
-
-- Data flow plan: Input(User prefs) -> Load Songs(Data) -> Score Songs(Scoring Logic) -> Songs Score judged(recommender) -> Output (top k highest songs recommended)
-  - Some potential biases may be on certain genres being associated with certain energy levels or the data having more songs of a certain genre and less of another
+**Music Recommender Simulation with a RAG Assistant.** The project now does two things:
+the original scoring recommender, plus a new **Retrieval-Augmented Generation (RAG)**
+assistant that lets you ask for music in plain English and get a recommendation grounded
+in a real song catalog. It matters because, on a small transparent dataset, it demonstrates
+how *grounding* a language model in retrieved data keeps its output honest — the AI can only
+recommend songs that actually exist, instead of inventing them.
 
 ---
 
-## Getting Started
+## Architecture Overview
 
-### Setup
+The system diagram lives at [diagrams/system_architecture.mmd](diagrams/system_architecture.mmd)
+(open it at [mermaid.live](https://mermaid.live) or with the Mermaid VS Code extension).
 
-1. Create a virtual environment (optional but recommended):
+Data flows **input → process → output**. A request — either a plain-English query *or* a
+structured taste profile — plus the [songs.csv](data/songs.csv) catalog feeds one of two paths:
 
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate      # Mac or Linux
-   .venv\Scripts\activate         # Windows
+- **RAG path** ([src/rag.py](src/rag.py)) — three fixed stages:
+  1. **Retrieve** — `retrieve_songs()` ranks the catalog against the query (keyword overlap on genre/mood/artist/title, plus energy hints) and keeps the top matches.
+  2. **Augment** — `format_context()` packs those songs into a context block.
+  3. **Generate** — Claude (`claude-opus-4-8`) writes a recommendation using *only* the retrieved songs.
+- **Scoring path** ([src/recommender.py](src/recommender.py)) — scores each song by weighted feature closeness to the profile and returns ranked top-k picks with reasons.
 
-2. Install dependencies
+Every output is **checked**: automated `pytest` tests cover the scoring logic, and a human
+reviews recommendations for relevance (documented in [model_card.md](model_card.md)). If no
+API key is set, the RAG path degrades gracefully to showing the retrieved songs instead of
+crashing.
+
+---
+
+## Setup Instructions
+
+Run all commands from the **project root** (not from `src/`).
 
 ```bash
+# 1. (optional) create a virtual environment
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+
+# 2. install dependencies (includes anthropic + streamlit)
 pip install -r requirements.txt
-```
 
-3. Run the app:
-
-```bash
-python -m src.main
-```
-
-### Running Tests
-
-Run the starter tests with:
-
-```bash
+# 3. run the tests
 pytest
+
+# 4a. scoring recommender (CLI)
+python -m src.main
+
+# 4b. RAG assistant (CLI) — retrieval works with no API key
+python -m src.rag "chill music for late-night studying"
+
+# 4c. run it in the browser
+streamlit run src/app.py
 ```
 
-You can add more tests in `tests/test_recommender.py`.
+To enable Claude's written recommendation (not just the retrieved list), set your key first:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+python -m src.rag "upbeat pop for a workout"
+```
 
 ---
 
-## Sample Recommendation Output
+## Sample Interactions
 
-Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
+**1. RAG retrieval — `"high energy hip hop for the gym"`** *(real output)*
+```
+- "Lose Yourself" by Eminem (genre: hip hop, mood: intense, energy: 0.75, tempo: 171 bpm)
+- "SICKO MODE" by Travis Scott (genre: hip hop, mood: dark, energy: 0.73, tempo: 155 bpm)
+- "Stronger" by Kanye West (genre: hip hop, mood: confident, energy: 0.72, tempo: 104 bpm)
+- "Industry Baby" by Lil Nas X (genre: hip hop, mood: triumphant, energy: 0.70, tempo: 150 bpm)
+```
 
-User profile:
-  genre: pop
-  mood: happy
-  energy: 0.8
+**2. RAG with a key — `"chill music for late-night studying"`**
+*(illustrative of the grounded AI text; the actual prose is generated by Claude at runtime)*
+```
+For late-night studying, try "Spacewalk Thoughts" by Orbit Bloom — very low energy (0.28)
+and highly acoustic (0.92), so it stays in the background. "Library Rain" by Paper Lanterns
+is another calm, lo-fi pick at 72 bpm. Both keep the focus on your work, not the music.
+```
 
-Top recommendations:
-
+**3. Scoring recommender — profile `{genre: pop, mood: happy, energy: 0.8}`** *(real output)*
+```
 Sunrise City - Score: 1.00
-Because: matches your favorite genre (pop), matches your mood (happy), energy is close to your target (0.82 vs 0.80)
-
+Because: matches your favorite genre (pop), matches your mood (happy), energy close to target
 Gym Hero - Score: 0.72
-Because: matches your favorite genre (pop), energy is close to your target (0.93 vs 0.80)
-
-Rooftop Lights - Score: 0.49
-Because: matches your mood (happy), energy is close to your target (0.76 vs 0.80)
-
-Night Drive Loop - Score: 0.24
-Because: energy is close to your target (0.75 vs 0.80)
-
-Concrete Sunrise - Score: 0.23
-Because: energy is close to your target (0.72 vs 0.80)
-
-{User profile:
-  genre: rock
-  mood: sad
-  energy: 0.7
-
-Top recommendations:
-
-Storm Runner - Score: 0.70
-Because: matches your favorite genre (rock)
-
-Concrete Sunrise - Score: 0.24
-Because: energy is close to your target (0.72 vs 0.70)
-
-Night Drive Loop - Score: 0.24
-Because: energy is close to your target (0.75 vs 0.70)
-
-Rooftop Lights - Score: 0.23
-Because: energy is close to your target (0.76 vs 0.70)
-
-Backroad Dust - Score: 0.23
-Because: energy is close to your target (0.60 vs 0.70)}
-
-{User profile:
-  genre: rap
-  mood: sad
-  energy: 0.4
-
-Top recommendations:
-
-Focus Flow - Score: 0.25
-Because: energy is close to your target (0.40 vs 0.40)
-
-Midnight Coding - Score: 0.24
-Because: energy is close to your target (0.42 vs 0.40)
-
-Dust and Pinewood - Score: 0.24
-Because: energy is close to your target (0.38 vs 0.40)
-
-Coffee Shop Stories - Score: 0.24
-Because: energy is close to your target (0.37 vs 0.40)
-
-Library Rain - Score: 0.24
-Because: energy is close to your target (0.35 vs 0.40)}
-
-{ User profile:
-  genre: hip-hop
-  mood: sad
-  energy: 0.6
-
-Top recommendations:
-
-Backroad Dust - Score: 0.25
-Because: energy is close to your target (0.60 vs 0.60)
-
-Island Time - Score: 0.24
-Because: energy is close to your target (0.55 vs 0.60)
-
-Concrete Sunrise - Score: 0.22
-Because: energy is close to your target (0.72 vs 0.60)
-
-Velvet Hours - Score: 0.22
-Because: energy is close to your target (0.48 vs 0.60)
-
-Night Drive Loop - Score: 0.21
-Because: energy is close to your target (0.75 vs 0.60)
-}
-
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
+Because: matches your favorite genre (pop), energy close to target (0.93 vs 0.80)
+```
 
 ---
 
-## Experiments You Tried
+## Design Decisions
 
-Use this section to document the experiments you ran. For example:
-
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
-
----
-
-## Limitations and Risks
-
-Summarize some limitations of your recommender.
-
-Examples:
-
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
-
-You will go deeper on this in your model card.
+- **Keyword retrieval over embeddings.** Retrieval uses simple keyword overlap plus energy-hint
+  words rather than a machine-learning embedding model. The trade-off: it's readable and runs
+  anywhere with no extra services, but it can miss meaning ("music for concentrating" won't match
+  if no song contains that word).
+- **Strict grounding.** Claude is instructed to recommend *only* from the retrieved songs and to
+  drop zero-relevance matches. This prevents invented tracks, at the cost of never suggesting
+  anything outside the catalog.
+- **Graceful fallback.** With no API key, the RAG path returns the retrieved-songs list instead of
+  crashing, so the project is always demonstrable.
+- **RAG, not agentic.** The LLM performs one bounded generation step inside a control flow I define —
+  it does not autonomously choose tools or loop. This keeps the system predictable and easy to explain.
 
 ---
 
-## Reflection
+## Testing Summary
 
-Read and complete `model_card.md`:
+**AI should prove it works, not just seem to.** This project measures reliability three ways:
 
-[**Model Card**](model_card.md)
+1. **Automated tests** — the `pytest` suite (8 tests, all passing) covers both the scoring
+   recommender and the RAG retrieval logic. The RAG tests ([tests/test_rag.py](tests/test_rag.py))
+   assert the properties that make retrieval trustworthy: results are ranked highest-score first
+   and capped at *k*, energy hints steer a "chill studying" query away from the gym track, a
+   nonsense query returns **nothing** (rather than random songs), and — most important for RAG —
+   the context block is **grounded**: it contains only the retrieved songs and never leaks a song
+   that wasn't retrieved.
+   ```bash
+   pytest -v        # 8 passed
+   ```
+2. **Error handling / graceful fallback** — the generate step raises a clear `RuntimeError` when
+   `anthropic` isn't installed or no `ANTHROPIC_API_KEY` is set, and `rag_recommend()` catches it
+   and returns the retrieved-songs list instead of crashing. A no-match query returns a helpful
+   "try describing a genre or mood" message. Both behaviors are asserted by tests.
+3. **Human evaluation** — I review the recommendations by hand for relevance (does a "gym" query
+   really return high-energy tracks?) and record what I find in [model_card.md](model_card.md).
 
-Write 1 to 2 paragraphs here about what you learned:
+**What worked:** all 8 tests pass; retrieval returns sensible matches (a gym query surfaces
+high-energy hip hop, a studying query surfaces low-energy acoustic tracks); wiring the Messages API
+and expanding the catalog to 139 real songs both went cleanly. **What didn't run in automated
+testing:** the live Claude generation step — it needs an API key, which the code handles via the
+fallback above. **What I learned:** grounding an LLM in retrieved data is what makes its output
+trustworthy, and testing the *retrieval* + *grounding* is how you prove that — a solid fallback path
+matters as much as the happy path.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+---
 
+## Reflection (brief)
 
-
+This project taught me that "using AI" well is less about the prompting AI to do everything and more about how you use it as a tool for improvement
